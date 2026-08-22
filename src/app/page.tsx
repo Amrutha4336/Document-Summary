@@ -94,7 +94,17 @@ export default function Home() {
       clearTimeout(uploadTimer);
       clearTimeout(extractionTimer);
 
-      const data = await response.json();
+      let data: any = {};
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        console.error('Non-JSON response from server:', text);
+        data = { 
+          error: `Server Error (${response.status}): ${text.slice(0, 120) || response.statusText || 'The server returned an empty or invalid response.'}` 
+        };
+      }
 
       const elapsed = Date.now() - startTime;
       const minLoadTime = 3200;
@@ -124,7 +134,7 @@ export default function Home() {
       }
 
       setError({
-        message: 'A network communication error occurred. Please verify your internet connection and try again.'
+        message: `A network communication error occurred (${err?.message || 'Connection reset'}). Please verify your internet connection and try again.`
       });
       setStep('error');
     }
