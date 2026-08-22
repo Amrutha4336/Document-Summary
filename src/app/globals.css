@@ -1,0 +1,133 @@
+@import "tailwindcss";
+
+:root {
+  --sunrise-mint: #C6FFDD;
+  --sunrise-yellow: #FBD786;
+  --sunrise-coral: #F7797D;
+  
+  --lime-yellow: #F9F586;
+  --lime-mint: #A1FFCE;
+
+  --text-dark: #111814;
+  --border-dark: rgba(20, 30, 20, 0.15);
+  
+  --font-sans: system-ui, -apple-system, sans-serif;
+}
+
+@theme {
+  --color-sunrise-mint: var(--sunrise-mint);
+  --color-sunrise-yellow: var(--sunrise-yellow);
+  --color-sunrise-coral: var(--sunrise-coral);
+  
+  --color-lime-yellow: var(--lime-yellow);
+  --color-lime-mint: var(--lime-mint);
+  
+  --color-text-dark: var(--text-dark);
+  --color-border-dark: var(--border-dark);
+}
+
+body {
+  background: linear-gradient(135deg, #C6FFDD 0%, #FBD786 50%, #F7797D 100%);
+  background-attachment: fixed;
+  color: var(--text-dark);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Background grid accents (subtle overlay) */
+.grid-overlay {
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(rgba(17, 24, 20, 0.03) 1px, transparent 1px);
+  background-size: 24px 24px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Scrollbar Customization - Adjusted for Light-Colored Background */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(17, 24, 20, 0.03);
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(17, 24, 20, 0.15);
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(17, 24, 20, 0.3);
+}
+
+/* CSS Keyframes for Futuristic Loader */
+@keyframes rotateCube {
+  0% { transform: rotateX(0deg) rotateY(0deg); }
+  100% { transform: rotateX(360deg) rotateY(360deg); }
+}
+
+@keyframes sweep {
+  0% { top: 0%; opacity: 0; }
+  10% { opacity: 0.8; }
+  90% { opacity: 0.8; }
+  100% { top: 100%; opacity: 0; }
+}
+
+@keyframes floatParticle {
+  0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.3; }
+  50% { transform: translateY(-15px) translateX(8px); opacity: 0.7; }
+}
+
+/* 3D Cube Layouts */
+.cube-container {
+  width: 80px;
+  height: 80px;
+  perspective: 400px;
+}
+
+.cube {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  transform-style: preserve-3d;
+  animation: rotateCube 8s linear infinite;
+}
+
+.cube-face {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border: 1.5px solid #111814;
+  background: rgba(255, 255, 255, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: monospace;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.cube-face-front  { transform: rotateY(0deg) translateZ(40px); border-color: #111814; color: #111814; }
+.cube-face-back   { transform: rotateY(180deg) translateZ(40px); border-color: #111814; color: #111814; }
+.cube-face-right  { transform: rotateY(90deg) translateZ(40px); border-color: #111814; color: #111814; }
+.cube-face-left   { transform: rotateY(-90deg) translateZ(40px); border-color: #111814; color: #111814; }
+.cube-face-top    { transform: rotateX(90deg) translateZ(40px); border-color: #111814; color: #111814; }
+.cube-face-bottom { transform: rotateX(-90deg) translateZ(40px); border-color: #111814; color: #111814; }
+
+/* Apply squigglevision filter to components */
+.squigglevision {
+  filter: url(#squiggle);
+}
+
+.squigglevision-hover:hover {
+  filter: url(#squiggle);
+}
+
+.squigglevision-active {
+  filter: url(#squiggle);
+}
