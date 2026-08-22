@@ -1,13 +1,21 @@
 import { PDFParse } from 'pdf-parse';
 import path from 'path';
 import { pathToFileURL } from 'url';
+import fs from 'fs';
 
 try {
   const workerPath = path.join(process.cwd(), 'node_modules', 'pdfjs-dist', 'build', 'pdf.worker.mjs');
-  const workerUrl = pathToFileURL(workerPath).href;
-  PDFParse.setWorker(workerUrl);
+  if (fs.existsSync(workerPath)) {
+    const workerUrl = pathToFileURL(workerPath).href;
+    PDFParse.setWorker(workerUrl);
+    console.log('PDF Parse worker configured with local path:', workerUrl);
+  } else {
+    const cdnUrl = 'https://unpkg.com/pdfjs-dist@5.4.296/build/pdf.worker.min.mjs';
+    PDFParse.setWorker(cdnUrl);
+    console.log('PDF Parse worker configured with CDN fallback:', cdnUrl);
+  }
 } catch (e) {
-  console.error('Failed to configure PDF Parse worker path with pathToFileURL:', e);
+  console.error('Failed to configure PDF Parse worker path:', e);
 }
 
 export interface PdfExtractionResult {
