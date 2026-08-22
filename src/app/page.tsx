@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Header from '@/components/Header';
 import DoodleUpload from '@/components/DoodleUpload';
 import ProcessingLoader from '@/components/ProcessingLoader';
@@ -16,6 +16,7 @@ export default function Home() {
   const [error, setError] = useState<ProcessingError | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
   const [summaryLength, setSummaryLength] = useState<SummaryLength>('medium');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelected = (selectedFile: File) => {
     setFile(selectedFile);
@@ -31,6 +32,35 @@ export default function Home() {
     setStep('idle');
     setError(null);
     setValidationError(null);
+  };
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+  };
+
+  const validateAndSelectFile = (selectedFile: File) => {
+    const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg'];
+    const allowedExtensions = ['pdf', 'png', 'jpg', 'jpeg'];
+    const extension = selectedFile.name.split('.').pop()?.toLowerCase();
+
+    const isValidType = allowedTypes.includes(selectedFile.type) || allowedExtensions.includes(extension || '');
+    if (!isValidType) {
+      setValidationError('Unsupported file type. Please upload a PDF or an image (PNG, JPG, JPEG).');
+      return;
+    }
+
+    const MAX_FILE_SIZE = 10 * 1024 * 1024;
+    if (selectedFile.size > MAX_FILE_SIZE) {
+      setValidationError(`File is too large (${(selectedFile.size / (1024 * 1024)).toFixed(1)}MB). Maximum allowed is 10MB.`);
+      return;
+    }
+
+    setValidationError(null);
+    handleFileSelected(selectedFile);
   };
 
   const handleProcess = async () => {
@@ -106,122 +136,197 @@ export default function Home() {
 
       <Header />
 
+      {/* Hidden file input controlled by page and sub-actions */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        className="hidden"
+        accept=".pdf,image/png,image/jpeg,image/jpg"
+        onChange={(e) => {
+          if (e.target.files && e.target.files[0]) {
+            validateAndSelectFile(e.target.files[0]);
+          }
+        }}
+      />
+
       <main className="flex-1 flex flex-col items-center justify-start px-4 py-8 sm:px-6 lg:px-8 max-w-7xl w-full mx-auto relative z-10">
 
-        {(step === 'idle' || step === 'error') && !result && (
-          <div className="text-center max-w-2xl mx-auto mt-6 mb-10 animate-in fade-in slide-in-from-top-4 duration-500">
-            <h2 className="text-4xl font-black tracking-tight leading-none sm:text-5xl text-[#111814]">
-              Understand Your Documents{' '}
-              <span
-                className="bg-gradient-to-r from-[#F9F586] to-[#A1FFCE] bg-clip-text text-transparent inline-block font-extrabold relative"
-                style={{
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}
-              >
-              </span>
-            </h2>
-            <p className="mt-4 text-xs sm:text-sm text-[#111814]/80 leading-relaxed max-w-md mx-auto font-black uppercase tracking-widest">
-              AI-Powered summary brief audits & layout auditing reports.
-            </p>
-          </div>
-        )}
+        <div className="w-full flex-1 flex flex-col justify-start mt-4 sm:mt-8">
 
-        <div className="w-full flex-1 flex flex-col justify-start">
-
+          {/* STATE 1 — EMPTY WORKSPACE (Asymmetrical & Editorial) */}
           {step === 'idle' && !file && (
-            <div className="max-w-xl mx-auto w-full animate-in fade-in slide-in-from-bottom-4 duration-300">
-              <DoodleUpload
-                onFileSelected={handleFileSelected}
-                selectedFile={null}
-                onClear={handleReset}
-                error={validationError}
-                setError={setValidationError}
-              />
+            <div className="w-full max-w-5xl mx-auto flex flex-col gap-10">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 xl:gap-16 items-center py-6 sm:py-10 animate-in fade-in slide-in-from-bottom-6 duration-300">
+                
+                {/* Left Editorial Section */}
+                <div className="lg:col-span-7 flex flex-col text-left">
+                  <h2 className="font-display text-6xl sm:text-7xl lg:text-8xl font-normal tracking-tight leading-none text-[#111814] uppercase">
+                    MAKE YOUR <br />
+                    DOCUMENTS <br />
+                    SPEAK.
+                  </h2>
+                  
+                  <p className="mt-6 text-sm sm:text-base text-[#111814]/75 font-semibold leading-relaxed max-w-md">
+                    Drop a document worth understanding. Or start by{' '}
+                    <button 
+                      onClick={() => fileInputRef.current?.click()}
+                      className="underline font-black text-[#111814] hover:text-black cursor-pointer bg-transparent border-0 p-0 inline-block focus:outline-none"
+                    >
+                      browsing your files
+                    </button>.
+                  </p>
 
-              <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-5">
-                <div className="rounded-2xl border-2 border-[#111814] bg-white/35 p-5 shadow-sm hover:translate-y-[-2px] transition-transform">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#111814] text-[#A1FFCE] border border-[#111814]">
-                    <FileText className="h-4.5 w-4.5" />
+                  <div className="mt-8 flex items-center gap-2.5 text-[9px] font-black tracking-widest text-[#111814]/40 uppercase">
+                    <span>PDF</span>
+                    <span>&bull;</span>
+                    <span>JPG</span>
+                    <span>&bull;</span>
+                    <span>PNG</span>
+                    <span>&bull;</span>
+                    <span>OCR Parser</span>
                   </div>
-                  <h4 className="mt-4 text-xs font-black uppercase tracking-wider text-[#111814]">Digital Parsing</h4>
-                  <p className="mt-2 text-[11px] text-[#111814]/75 leading-relaxed font-bold">Extracts content, preserving paragraphs and formatting.</p>
                 </div>
 
-                <div className="rounded-2xl border-2 border-[#111814] bg-white/35 p-5 shadow-sm hover:translate-y-[-2px] transition-transform">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#111814] text-[#F9F586] border border-[#111814]">
-                    <Sparkles className="h-4.5 w-4.5" />
+                {/* Right Interactive Ingestion Section (Desk/Visual Mat) */}
+                <div className="lg:col-span-5 flex items-center justify-center relative py-12">
+                  
+                  {/* Overlapping page graphics behind Doodle folder */}
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
+                    {/* Page sheet 1 */}
+                    <div className="w-40 h-52 bg-white/50 border border-[#111814]/15 rounded-xl shadow-md rotate-[-8deg] -translate-x-8 -translate-y-4" />
+                    {/* Page sheet 2 */}
+                    <div className="w-40 h-52 bg-white/75 border border-[#111814]/15 rounded-xl shadow-md rotate-[6deg] translate-x-6 translate-y-2" />
                   </div>
-                  <h4 className="mt-4 text-xs font-black uppercase tracking-wider text-[#111814]">Smart Summaries</h4>
-                  <p className="mt-2 text-[11px] text-[#111814]/75 leading-relaxed font-bold">Converts texts into custom segmented reading briefs.</p>
-                </div>
 
-                <div className="rounded-2xl border-2 border-[#111814] bg-white/35 p-5 shadow-sm hover:translate-y-[-2px] transition-transform">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#111814] text-[#F7797D] border border-[#111814]">
-                    <Lightbulb className="h-4.5 w-4.5" />
+                  {/* Lime Crush active workspace block */}
+                  <div className="relative z-10 w-full max-w-[280px] bg-gradient-to-tr from-[#F9F586] to-[#A1FFCE] border-2 border-[#111814] rounded-3xl p-8 shadow-xl hover:translate-y-[-2px] transition-transform duration-300">
+                    <DoodleUpload
+                      onFileSelected={validateAndSelectFile}
+                      error={validationError}
+                      setError={setValidationError}
+                    />
                   </div>
-                  <h4 className="mt-4 text-xs font-black uppercase tracking-wider text-[#111814]">Structural Audits</h4>
-                  <p className="mt-2 text-[11px] text-[#111814]/75 leading-relaxed font-bold">Identifies logical leaks, missing sections, and weak content.</p>
+                </div>
+              </div>
+
+              {/* Editorial feature grid strip (Typography based, no cards) */}
+              <div className="w-full border-t border-[#111814]/10 pt-12 mt-8 grid grid-cols-1 md:grid-cols-3 gap-8 text-left select-none">
+                <div>
+                  <span className="text-[10px] font-black text-neutral-500 uppercase tracking-widest block mb-2">01 / PARSER</span>
+                  <h4 className="text-sm font-black text-[#111814] uppercase tracking-wider">Digital Parsing</h4>
+                  <p className="mt-2 text-xs text-[#111814]/75 leading-relaxed font-bold">Extracts content, preserving paragraphs and structural formatting.</p>
+                </div>
+                <div>
+                  <span className="text-[10px] font-black text-neutral-500 uppercase tracking-widest block mb-2">02 / INSIGHTS</span>
+                  <h4 className="text-sm font-black text-[#111814] uppercase tracking-wider">Smart Summary</h4>
+                  <p className="mt-2 text-xs text-[#111814]/75 leading-relaxed font-bold">Converts documents into customized, structured reading briefs.</p>
+                </div>
+                <div>
+                  <span className="text-[10px] font-black text-neutral-500 uppercase tracking-widest block mb-2">03 / AUDIT</span>
+                  <h4 className="text-sm font-black text-[#111814] uppercase tracking-wider">Structural Audit</h4>
+                  <p className="mt-2 text-xs text-[#111814]/75 leading-relaxed font-bold">Identifies logical leaks, missing sections, and weaker content blocks.</p>
                 </div>
               </div>
             </div>
           )}
 
+          {/* STATE 2 — FILE UPLOADED WORKSPACE (Document + controls config) */}
           {step === 'idle' && file && !result && (
-            <div className="max-w-md mx-auto w-full flex flex-col gap-6 animate-in fade-in zoom-in-95 duration-200">
-              <DoodleUpload
-                onFileSelected={handleFileSelected}
-                selectedFile={file}
-                onClear={handleReset}
-                error={validationError}
-                setError={setValidationError}
-              />
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 xl:gap-16 items-start w-full max-w-5xl mx-auto py-6 sm:py-10 animate-in fade-in duration-300">
+              
+              {/* Left Column: 01 — THE DOCUMENT */}
+              <div className="lg:col-span-5 flex flex-col items-center lg:items-start text-center lg:text-left gap-6 border-b lg:border-b-0 lg:border-r border-[#111814]/10 pb-8 lg:pb-0 lg:pr-8 xl:pr-12">
+                <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#111814]/50 select-none">
+                  01 / The Document
+                </span>
 
-              <div
-                style={{
-                  background: 'linear-gradient(135deg, rgba(249, 245, 134, 0.96), rgba(161, 255, 206, 0.96))',
-                  boxShadow: '0 20px 50px rgba(0,0,0,0.12)',
-                  border: '1px solid rgba(20, 30, 20, 0.15)',
-                }}
-                className="rounded-3xl p-6 shadow-xl"
-              >
-                <label className="text-[10px] font-black uppercase tracking-widest text-[#111814]/70">Select Brief Complexity</label>
-                <div className="mt-3.5">
-                  <SummaryLengthSelector selected={summaryLength} onChange={setSummaryLength} />
+                {/* Stylized Document Preview Box */}
+                <div className="relative w-44 h-56 bg-white border-2 border-[#111814] rounded-2xl shadow-xl overflow-hidden flex flex-col p-4 select-none">
+                  <div className="flex items-center justify-between mb-4 border-b border-[#111814]/10 pb-2">
+                    <span className="text-[8px] font-black uppercase tracking-wider text-[#111814]/60 truncate max-w-[80px]">
+                      {file.name}
+                    </span>
+                    <span className="text-[8px] font-black uppercase tracking-wider bg-[#111814] text-white px-1.5 py-0.5 rounded">
+                      {file.name.split('.').pop()?.toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="space-y-2.5 flex-1">
+                    <div className="h-1.5 bg-[#111814]/10 rounded w-5/6" />
+                    <div className="h-1.5 bg-[#111814]/10 rounded w-full" />
+                    <div className="h-1.5 bg-[#111814]/10 rounded w-4/5" />
+                    <div className="h-1.5 bg-[#111814]/10 rounded w-11/12" />
+                    <div className="h-1.5 bg-[#111814]/10 rounded w-2/3" />
+                  </div>
+                </div>
+
+                <div className="flex flex-col items-center lg:items-start">
+                  <p className="text-sm font-black text-[#111814] break-all max-w-[280px]">
+                    {file.name}
+                  </p>
+                  <p className="mt-1 text-[10px] font-black text-[#111814]/60 uppercase tracking-widest">
+                    {file.type === 'application/pdf' || file.name.endsWith('.pdf') ? 'PDF' : 'Image'} &bull; {formatFileSize(file.size)}
+                  </p>
                 </div>
 
                 <button
-                  onClick={handleProcess}
-                  style={{
-                    boxShadow: '4px 4px 0 rgba(17, 24, 20, 0.8)',
-                    border: '2px solid #111814'
-                  }}
-                  className="mt-6 w-full flex items-center justify-center gap-2 rounded-xl bg-[#111814] text-white py-3 text-xs font-black uppercase tracking-widest transition-all duration-200 active:scale-[0.99] hover:bg-gradient-to-r hover:from-[#F9F586] hover:to-[#A1FFCE] hover:text-[#111814]"
+                  onClick={handleReset}
+                  className="rounded-xl border-2 border-[#111814] bg-white/50 px-4 py-2.5 text-xs font-black uppercase text-[#111814] hover:bg-white transition-all cursor-pointer shadow-sm active:scale-98"
                 >
-                  <span>Begin Document Audit</span>
-                  <Sparkles className="h-4 w-4" />
+                  Change file
                 </button>
               </div>
+
+              {/* Right Column: 02 — THE ANALYSIS */}
+              <div className="lg:col-span-7 flex flex-col justify-start">
+                <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#111814]/50 select-none">
+                  02 / The Analysis
+                </span>
+
+                <h3 className="mt-4 font-display text-3xl text-[#111814] uppercase select-none">
+                  How much should we unpack?
+                </h3>
+
+                {/* Depth selector block inside Lime Crush block */}
+                <div className="mt-5 bg-gradient-to-tr from-[#F9F586] to-[#A1FFCE] border-2 border-[#111814] rounded-3xl p-6 shadow-md">
+                  <div className="mt-1">
+                    <SummaryLengthSelector selected={summaryLength} onChange={setSummaryLength} />
+                  </div>
+
+                  <button
+                    onClick={handleProcess}
+                    style={{
+                      boxShadow: '4px 4px 0 rgba(17, 24, 20, 0.8)',
+                      border: '2px solid #111814'
+                    }}
+                    className="mt-8 w-full flex items-center justify-center gap-2 rounded-xl bg-[#111814] text-white py-3.5 text-xs font-black uppercase tracking-widest transition-all duration-200 active:scale-[0.99] hover:bg-gradient-to-r hover:from-[#F9F586] hover:to-[#A1FFCE] hover:text-[#111814] cursor-pointer"
+                  >
+                    <span>Analyze document →</span>
+                  </button>
+                </div>
+              </div>
+
             </div>
           )}
 
+          {/* STATE 3 — PROCESSING STATE (Scanning Visual) */}
           {['uploading', 'extracting', 'ocr', 'summarizing'].includes(step) && (
-            <div className="max-w-md mx-auto w-full">
+            <div className="max-w-md mx-auto w-full py-8">
               <ProcessingLoader currentStep={step} file={file} />
             </div>
           )}
 
+          {/* ERROR STATE */}
           {step === 'error' && error && (
-            <div className="max-w-md mx-auto w-full rounded-3xl border-2 border-[#111814] bg-white p-6 shadow-2xl text-center animate-in fade-in zoom-in-95">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 text-red-600 border-2 border-red-600 shadow-sm">
-                <AlertTriangle className="h-6 w-6" />
+            <div className="max-w-md mx-auto w-full rounded-3xl border-2 border-[#111814] bg-white/80 p-6 shadow-xl text-center animate-in fade-in zoom-in-95">
+              <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-red-100 text-red-600 border border-red-600 shadow-sm">
+                <AlertTriangle className="h-5 w-5" />
               </div>
 
-              <h3 className="mt-4 text-base font-black tracking-widest uppercase text-[#111814]">Audit Halted</h3>
+              <h3 className="mt-4 text-xs font-black tracking-widest uppercase text-[#111814]">Analysis Halted</h3>
               <p className="mt-3 text-xs font-bold text-red-700 leading-relaxed">{error.message}</p>
 
               {error.isScannedPdfFallback && (
-                <div className="mt-4 rounded-2xl bg-neutral-950 p-4 text-[10px] text-[#F9F586] text-left leading-relaxed border-2 border-[#111814]">
+                <div className="mt-4 rounded-2xl bg-neutral-950 p-4 text-[10px] text-[#F9F586] text-left leading-relaxed border border-neutral-800">
                   <strong className="block mb-1 text-white font-extrabold uppercase tracking-wide">🔍 Standard parser bypassed:</strong>
                   Standard text extraction only works for digital, selectable PDFs. For scanned pages or image documents, please convert them to JPG/PNG images and upload them directly to run OCR.
                 </div>
@@ -230,7 +335,7 @@ export default function Home() {
               <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
                 <button
                   onClick={handleReset}
-                  className="rounded-xl border-2 border-neutral-900 bg-neutral-950 px-4 py-2.5 text-xs font-black uppercase text-white hover:bg-neutral-800 transition-colors cursor-pointer"
+                  className="rounded-xl border-2 border-[#111814] bg-white/50 px-4 py-2.5 text-xs font-black uppercase text-[#111814] hover:bg-white transition-colors cursor-pointer"
                 >
                   Different File
                 </button>
@@ -242,14 +347,15 @@ export default function Home() {
                   }}
                   className="rounded-xl bg-[#111814] text-white px-4 py-2.5 text-xs font-black uppercase tracking-widest hover:bg-gradient-to-r hover:from-[#F9F586] hover:to-[#A1FFCE] hover:text-[#111814] transition-all cursor-pointer"
                 >
-                  Retry Audit
+                  Retry Analysis
                 </button>
               </div>
             </div>
           )}
 
+          {/* STATE 4 — RESULTS STATE (Editorial dashboard view) */}
           {step === 'success' && result && (
-            <div className="animate-in fade-in duration-500">
+            <div className="animate-in fade-in duration-500 py-4">
               <Dashboard result={result} onReset={handleReset} />
             </div>
           )}
@@ -257,7 +363,8 @@ export default function Home() {
         </div>
       </main>
 
-      <footer className="w-full border-t border-neutral-900/10 bg-white/20 backdrop-blur-sm py-6 text-center text-[9px] font-black text-neutral-800 uppercase tracking-widest mt-12 shrink-0">
+
+      <footer className="w-full border-t border-neutral-900/10 bg-white/10 backdrop-blur-sm py-6 text-center text-[9px] font-black text-neutral-800 uppercase tracking-widest mt-12 shrink-0">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <p>&copy; {new Date().getFullYear()} DocuBrief Systems. All operations compiled in-memory.</p>
         </div>
@@ -265,3 +372,4 @@ export default function Home() {
     </div>
   );
 }
+

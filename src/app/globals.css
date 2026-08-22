@@ -11,7 +11,7 @@
   --text-dark: #111814;
   --border-dark: rgba(20, 30, 20, 0.15);
   
-  --font-sans: system-ui, -apple-system, sans-serif;
+  --font-sans: var(--font-body), system-ui, -apple-system, sans-serif;
 }
 
 @theme {
@@ -24,6 +24,9 @@
   
   --color-text-dark: var(--text-dark);
   --color-border-dark: var(--border-dark);
+  
+  --font-display: var(--font-display), cursive;
+  --font-sans: var(--font-body), sans-serif;
 }
 
 body {
@@ -34,6 +37,7 @@ body {
   overflow-x: hidden;
   min-height: 100vh;
 }
+
 
 /* Background grid accents (subtle overlay) */
 .grid-overlay {
