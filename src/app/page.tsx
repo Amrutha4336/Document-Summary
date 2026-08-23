@@ -83,20 +83,41 @@ export default function Home() {
     setError(null);
 
     const isPdf = file.type === 'application/pdf' || file.name.endsWith('.pdf');
-
-    const uploadTimer = setTimeout(() => {
-      setStep(isPdf ? 'extracting' : 'ocr');
-    }, 1000);
-
-    const extractionTimer = setTimeout(() => {
-      setStep('summarizing');
-    }, 2400);
-
     const startTime = Date.now();
 
+    let uploadTimer: NodeJS.Timeout | undefined;
+    let extractionTimer: NodeJS.Timeout | undefined;
+
+    if (isPdf) {
+      uploadTimer = setTimeout(() => {
+        setStep('extracting');
+      }, 1000);
+
+      extractionTimer = setTimeout(() => {
+        setStep('summarizing');
+      }, 2400);
+    }
+
     try {
+      let ocrText = '';
+      if (!isPdf) {
+        setStep('ocr');
+        const { createWorker } = await import('tesseract.js');
+        const worker = await createWorker('eng');
+        const { data: { text } } = await worker.recognize(file);
+        await worker.terminate();
+        ocrText = text;
+        setStep('summarizing');
+      }
+
       const formData = new FormData();
-      formData.append('file', file);
+      if (!isPdf) {
+        formData.append('text', ocrText);
+        formData.append('fileName', file.name);
+        formData.append('fileSize', String(file.size));
+      } else {
+        formData.append('file', file);
+      }
       formData.append('length', summaryLength);
 
       const response = await fetch('/api/process', {
@@ -104,8 +125,8 @@ export default function Home() {
         body: formData,
       });
 
-      clearTimeout(uploadTimer);
-      clearTimeout(extractionTimer);
+      if (uploadTimer) clearTimeout(uploadTimer);
+      if (extractionTimer) clearTimeout(extractionTimer);
 
       let data: {
         fileName?: string;
@@ -149,8 +170,8 @@ export default function Home() {
       setResult(data as SummaryResult);
       setStep('success');
     } catch (err: unknown) {
-      clearTimeout(uploadTimer);
-      clearTimeout(extractionTimer);
+      if (uploadTimer) clearTimeout(uploadTimer);
+      if (extractionTimer) clearTimeout(extractionTimer);
 
       const elapsed = Date.now() - startTime;
       const minLoadTime = 3200;
@@ -160,7 +181,7 @@ export default function Home() {
 
       const errMessage = err instanceof Error ? err.message : String(err);
       setError({
-        message: `A network communication error occurred (${errMessage || 'Connection reset'}). Please verify your internet connection and try again.`
+        message: `A network communication error occurred or the request timed out (${errMessage || 'Connection reset'}). Please verify your internet connection and try again.`
       });
       setStep('error');
     }

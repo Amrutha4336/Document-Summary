@@ -18,63 +18,78 @@ export async function POST(request: NextRequest) {
     }
 
     const file = formData.get('file') as File | null;
+    const textInput = formData.get('text') as string | null;
     const lengthInput = formData.get('length') as string | null;
     const length = (lengthInput === 'short' || lengthInput === 'medium' || lengthInput === 'long') 
       ? lengthInput 
       : 'medium';
 
-    if (!file) {
+    const clientFileName = formData.get('fileName') as string | null;
+    const clientFileSizeStr = formData.get('fileSize') as string | null;
+    const clientFileSize = clientFileSizeStr ? parseInt(clientFileSizeStr, 10) : 0;
+
+    if (!file && !textInput) {
       return NextResponse.json(
-        { error: 'No file was provided. Please select a PDF or image file.' },
+        { error: 'No file or text content was provided.' },
         { status: 400 }
       );
     }
 
-    const MAX_FILE_SIZE = 10 * 1024 * 1024;
-    if (file.size > MAX_FILE_SIZE) {
-      return NextResponse.json(
-        { error: `The selected file is too large (${(file.size / (1024 * 1024)).toFixed(1)}MB). The maximum allowed size is 10MB.` },
-        { status: 400 }
-      );
+    if (file) {
+      const MAX_FILE_SIZE = 10 * 1024 * 1024;
+      if (file.size > MAX_FILE_SIZE) {
+        return NextResponse.json(
+          { error: `The selected file is too large (${(file.size / (1024 * 1024)).toFixed(1)}MB). The maximum allowed size is 10MB.` },
+          { status: 400 }
+        );
+      }
     }
 
-    const mimeType = file.type || '';
-    const name = file.name || 'document';
-    const extension = name.split('.').pop()?.toLowerCase();
-    
-    const isPdf = mimeType === 'application/pdf' || extension === 'pdf';
-    const isImage = ['image/png', 'image/jpeg', 'image/jpg'].includes(mimeType) || 
-                  ['png', 'jpg', 'jpeg'].includes(extension || '');
+    let isPdf = false;
+    let isImage = false;
+    let fileBuffer: Buffer = Buffer.alloc(0);
 
-    if (!isPdf && !isImage) {
-      return NextResponse.json(
-        { error: 'Unsupported file format. Only PDF documents and image files (PNG, JPG, JPEG) are accepted.' },
-        { status: 400 }
-      );
-    }
+    if (file) {
+      const mimeType = file.type || '';
+      const name = file.name || 'document';
+      const extension = name.split('.').pop()?.toLowerCase();
+      
+      isPdf = mimeType === 'application/pdf' || extension === 'pdf';
+      isImage = ['image/png', 'image/jpeg', 'image/jpg'].includes(mimeType) || 
+                    ['png', 'jpg', 'jpeg'].includes(extension || '');
 
-    let fileBuffer: Buffer;
-    try {
-      const arrayBuffer = await file.arrayBuffer();
-      fileBuffer = Buffer.from(arrayBuffer);
-    } catch {
-      return NextResponse.json(
-        { error: 'Could not read file data. The file might be corrupted.' },
-        { status: 400 }
-      );
-    }
+      if (!isPdf && !isImage) {
+        return NextResponse.json(
+          { error: 'Unsupported file format. Only PDF documents and image files (PNG, JPG, JPEG) are accepted.' },
+          { status: 400 }
+        );
+      }
 
-    if (fileBuffer.length === 0) {
-      return NextResponse.json(
-        { error: 'The uploaded file is empty.' },
-        { status: 400 }
-      );
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        fileBuffer = Buffer.from(arrayBuffer);
+      } catch {
+        return NextResponse.json(
+          { error: 'Could not read file data. The file might be corrupted.' },
+          { status: 400 }
+        );
+      }
+
+      if (fileBuffer.length === 0) {
+        return NextResponse.json(
+          { error: 'The uploaded file is empty.' },
+          { status: 400 }
+        );
+      }
     }
 
     let extractedText = '';
     let pageCount = 1;
 
-    if (isPdf) {
+    if (textInput) {
+      extractedText = textInput;
+      pageCount = 1;
+    } else if (file && isPdf) {
       try {
         const pdfResult = await extractTextFromPdf(fileBuffer);
         extractedText = pdfResult.text;
@@ -86,7 +101,7 @@ export async function POST(request: NextRequest) {
           { status: 500 }
         );
       }
-    } else {
+    } else if (file && isImage) {
       try {
         extractedText = await extractTextFromImage(fileBuffer);
         pageCount = 1;
@@ -101,7 +116,7 @@ export async function POST(request: NextRequest) {
 
     const sanitizedText = extractedText.trim();
     if (!sanitizedText || sanitizedText.length < 15) {
-      if (isPdf) {
+      if (file && isPdf) {
         return NextResponse.json(
           { 
             error: 'No readable text was found in this PDF. It might be a scanned document, contain only images, or contain password protection. Please convert its pages to PNG/JPG images and upload them instead.',
@@ -124,8 +139,8 @@ export async function POST(request: NextRequest) {
       const summaryResult = await summarizeDocument(sanitizedText, length);
       
       return NextResponse.json({
-        fileName: file.name,
-        fileSize: file.size,
+        fileName: file ? file.name : (clientFileName || 'document_sample.jpg'),
+        fileSize: file ? file.size : clientFileSize,
         pageCount,
         wordCount,
         characterCount,
