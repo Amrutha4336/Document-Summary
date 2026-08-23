@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ProcessingStep } from '@/types';
-import { FileText, Cpu, Check } from 'lucide-react';
+import { FileText } from 'lucide-react';
 
 interface ProcessingLoaderProps {
   currentStep: ProcessingStep;
@@ -10,41 +10,40 @@ interface ProcessingLoaderProps {
 }
 
 export default function ProcessingLoader({ currentStep, file }: ProcessingLoaderProps) {
-  const [largePhrase, setLargePhrase] = useState('READING');
-  const [detailPhrase, setDetailPhrase] = useState('your document');
-  const [progressVal, setProgressVal] = useState(10);
   const [simulatedPage, setSimulatedPage] = useState(1);
 
-  // Natural human product language state mappings
-  useEffect(() => {
-    switch (currentStep) {
-      case 'uploading':
-        setLargePhrase('READING');
-        setDetailPhrase('your document');
-        setProgressVal(20);
-        break;
-      case 'extracting':
-      case 'ocr':
-        setLargePhrase('EXTRACTING');
-        setDetailPhrase('the important parts');
-        setProgressVal(60);
-        break;
-      case 'summarizing':
-        setLargePhrase('BUILDING');
-        setDetailPhrase('your summary');
-        setProgressVal(85);
-        break;
-      case 'success':
-        setLargePhrase('FINISHING');
-        setDetailPhrase('up');
-        setProgressVal(100);
-        break;
-      default:
-        setLargePhrase('READING');
-        setDetailPhrase('your document');
-        break;
-    }
-  }, [currentStep]);
+  // Derived variables instead of state to avoid cascading renders
+  let largePhrase = 'READING';
+  let detailPhrase = 'your document';
+  let progressVal = 10;
+
+  switch (currentStep) {
+    case 'uploading':
+      largePhrase = 'READING';
+      detailPhrase = 'your document';
+      progressVal = 20;
+      break;
+    case 'extracting':
+    case 'ocr':
+      largePhrase = 'EXTRACTING';
+      detailPhrase = 'the important parts';
+      progressVal = 60;
+      break;
+    case 'summarizing':
+      largePhrase = 'BUILDING';
+      detailPhrase = 'your summary';
+      progressVal = 85;
+      break;
+    case 'success':
+      largePhrase = 'FINISHING';
+      detailPhrase = 'up';
+      progressVal = 100;
+      break;
+    default:
+      largePhrase = 'READING';
+      detailPhrase = 'your document';
+      break;
+  }
 
   // Simulate scanning pages
   useEffect(() => {
@@ -53,7 +52,6 @@ export default function ProcessingLoader({ currentStep, file }: ProcessingLoader
     }
     const isPdf = file ? (file.type === 'application/pdf' || file.name.endsWith('.pdf')) : false;
     if (!isPdf) {
-      setSimulatedPage(1);
       return;
     }
 

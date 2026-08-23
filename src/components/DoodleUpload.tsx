@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, DragEvent, ChangeEvent } from 'react';
-import { FileText, Image as ImageIcon, AlertCircle } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 
 interface DoodleUploadProps {
   onFileSelected: (file: File) => void;

@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { 
   Copy, Check, ArrowLeft, 
-  Lightbulb, Search, BookOpen, 
+  Lightbulb, Search, 
   Eye, EyeOff, FileDown, CheckCircle
 } from 'lucide-react';
 import { SummaryResult } from '@/types';

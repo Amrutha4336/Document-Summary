@@ -18,10 +18,11 @@ export async function extractTextFromPdf(pdfBuffer: Buffer): Promise<PdfExtracti
       text: cleanedText,
       pages: totalPages || 1,
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error parsing PDF with unpdf:', error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(
-      error?.message || 'We couldn\'t extract text from this PDF. The file may be corrupted or contain unsupported content.'
+      errorMessage || 'We couldn\'t extract text from this PDF. The file may be corrupted or contain unsupported content.'
     );
   }
 }

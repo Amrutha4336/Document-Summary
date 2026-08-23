@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     let formData;
     try {
       formData = await request.formData();
-    } catch (e) {
+    } catch {
       return NextResponse.json(
         { error: 'Failed to process file upload. Invalid form data structure.' },
         { status: 400 }
@@ -42,8 +42,8 @@ export async function POST(request: NextRequest) {
     const name = file.name || 'document';
     const extension = name.split('.').pop()?.toLowerCase();
     
-    let isPdf = mimeType === 'application/pdf' || extension === 'pdf';
-    let isImage = ['image/png', 'image/jpeg', 'image/jpg'].includes(mimeType) || 
+    const isPdf = mimeType === 'application/pdf' || extension === 'pdf';
+    const isImage = ['image/png', 'image/jpeg', 'image/jpg'].includes(mimeType) || 
                   ['png', 'jpg', 'jpeg'].includes(extension || '');
 
     if (!isPdf && !isImage) {
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
     try {
       const arrayBuffer = await file.arrayBuffer();
       fileBuffer = Buffer.from(arrayBuffer);
-    } catch (e) {
+    } catch {
       return NextResponse.json(
         { error: 'Could not read file data. The file might be corrupted.' },
         { status: 400 }
@@ -79,9 +79,10 @@ export async function POST(request: NextRequest) {
         const pdfResult = await extractTextFromPdf(fileBuffer);
         extractedText = pdfResult.text;
         pageCount = pdfResult.pages;
-      } catch (pdfError: any) {
+      } catch (pdfError: unknown) {
+        const pdfMessage = pdfError instanceof Error ? pdfError.message : String(pdfError);
         return NextResponse.json(
-          { error: pdfError?.message || 'We could not extract text from this PDF. It might be password-protected or corrupted.' },
+          { error: pdfMessage || 'We could not extract text from this PDF. It might be password-protected or corrupted.' },
           { status: 500 }
         );
       }
@@ -89,9 +90,10 @@ export async function POST(request: NextRequest) {
       try {
         extractedText = await extractTextFromImage(fileBuffer);
         pageCount = 1;
-      } catch (ocrError: any) {
+      } catch (ocrError: unknown) {
+        const ocrMessage = ocrError instanceof Error ? ocrError.message : String(ocrError);
         return NextResponse.json(
-          { error: ocrError?.message || 'Optical Character Recognition (OCR) failed to read this image.' },
+          { error: ocrMessage || 'Optical Character Recognition (OCR) failed to read this image.' },
           { status: 500 }
         );
       }
@@ -130,10 +132,11 @@ export async function POST(request: NextRequest) {
         extractedText: sanitizedText,
         ...summaryResult
       });
-    } catch (aiError: any) {
+    } catch (aiError: unknown) {
       console.error('AI Processing Error:', aiError);
       
-      if (aiError?.message?.includes('API key') || !process.env.GEMINI_API_KEY) {
+      const aiMessage = aiError instanceof Error ? aiError.message : String(aiError);
+      if (aiMessage.includes('API key') || !process.env.GEMINI_API_KEY) {
         return NextResponse.json(
           { error: 'The AI Summarization Service is currently unavailable because the API key is not configured. Please contact the administrator.' },
           { status: 503 }
@@ -141,11 +144,11 @@ export async function POST(request: NextRequest) {
       }
 
       return NextResponse.json(
-        { error: aiError?.message || 'The AI service encountered an error generating the summary. Please try again.' },
+        { error: aiMessage || 'The AI service encountered an error generating the summary. Please try again.' },
         { status: 502 }
       );
     }
-  } catch (globalError: any) {
+  } catch (globalError: unknown) {
     console.error('Global Route Error:', globalError);
     return NextResponse.json(
       { error: 'An unexpected server error occurred while processing your request. Please try again later.' },

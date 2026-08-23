@@ -7,7 +7,7 @@ import ProcessingLoader from '@/components/ProcessingLoader';
 import SummaryLengthSelector from '@/components/SummaryLengthSelector';
 import Dashboard from '@/components/Dashboard';
 import { SummaryLength, SummaryResult, ProcessingStep, ProcessingError } from '@/types';
-import { Sparkles, FileText, Cpu, Lightbulb, AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
@@ -32,6 +32,19 @@ export default function Home() {
     setStep('idle');
     setError(null);
     setValidationError(null);
+  };
+
+  const handleLoadSample = async () => {
+    try {
+      const response = await fetch('/document_sample.jpg');
+      if (!response.ok) throw new Error('Sample file not found');
+      const blob = await response.blob();
+      const sampleFile = new File([blob], 'document_sample.jpg', { type: 'image/jpeg' });
+      validateAndSelectFile(sampleFile);
+    } catch (err: unknown) {
+      console.error('Failed to load sample document:', err);
+      setValidationError('Failed to load the sample document. Please try uploading your own.');
+    }
   };
 
   const formatFileSize = (bytes: number): string => {
@@ -94,7 +107,19 @@ export default function Home() {
       clearTimeout(uploadTimer);
       clearTimeout(extractionTimer);
 
-      let data: any = {};
+      let data: {
+        fileName?: string;
+        fileSize?: number;
+        pageCount?: number;
+        wordCount?: number;
+        characterCount?: number;
+        extractedText?: string;
+        summary?: string;
+        keyPoints?: string[];
+        improvementSuggestions?: string[];
+        error?: string;
+        isScannedPdfFallback?: boolean;
+      } = {};
       const contentType = response.headers.get('content-type');
       if (contentType && contentType.includes('application/json')) {
         data = await response.json();
@@ -121,9 +146,9 @@ export default function Home() {
         return;
       }
 
-      setResult(data);
+      setResult(data as SummaryResult);
       setStep('success');
-    } catch (err: any) {
+    } catch (err: unknown) {
       clearTimeout(uploadTimer);
       clearTimeout(extractionTimer);
 
@@ -133,8 +158,9 @@ export default function Home() {
         await new Promise((resolve) => setTimeout(resolve, minLoadTime - elapsed));
       }
 
+      const errMessage = err instanceof Error ? err.message : String(err);
       setError({
-        message: `A network communication error occurred (${err?.message || 'Connection reset'}). Please verify your internet connection and try again.`
+        message: `A network communication error occurred (${errMessage || 'Connection reset'}). Please verify your internet connection and try again.`
       });
       setStep('error');
     }
@@ -185,6 +211,19 @@ export default function Home() {
                       browsing your files
                     </button>.
                   </p>
+
+                  <div className="mt-5">
+                    <button
+                      onClick={handleLoadSample}
+                      style={{
+                        boxShadow: '2px 2px 0 rgba(17, 24, 20, 0.8)',
+                        border: '2px solid #111814'
+                      }}
+                      className="text-xs font-black uppercase tracking-wider text-[#111814] bg-white rounded-xl px-4 py-2.5 cursor-pointer hover:bg-neutral-100 transition-all duration-200 active:scale-[0.98]"
+                    >
+                      ⚡ Load Sample Document
+                    </button>
+                  </div>
 
                   <div className="mt-8 flex items-center gap-2.5 text-[9px] font-black tracking-widest text-[#111814]/40 uppercase">
                     <span>PDF</span>
