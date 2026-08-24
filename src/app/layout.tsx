@@ -14,7 +14,7 @@ const bodyFont = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "DocuBrief — Document Intelligence Workspace",
+  title: "DocuSummary — Document Intelligence Workspace",
   description: "Generate structured summary briefs and audits from multi-page PDFs and images using Gemini AI.",
 };
 

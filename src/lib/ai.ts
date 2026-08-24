@@ -4,7 +4,7 @@ export interface SummarizationResponse {
   improvementSuggestions: string[];
 }
 
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent';
 
 function chunkText(text: string, chunkSize: number = 10000, overlap: number = 1500): string[] {
   const chunks: string[] = [];

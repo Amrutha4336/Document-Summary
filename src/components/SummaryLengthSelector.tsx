@@ -28,14 +28,14 @@ export default function SummaryLengthSelector({ selected, onChange }: SummaryLen
 
   return (
     <div className="w-full">
-      <div className="relative flex rounded-xl bg-white/30 p-[3px] border-2 border-[#111814] overflow-hidden select-none">
+      <div className="relative flex rounded-xl bg-neutral-100 p-[3px] border border-neutral-200/80 overflow-hidden select-none">
         <div
           style={{
-            background: 'linear-gradient(135deg, #F9F586 0%, #A1FFCE 100%)',
-            border: '1.5px solid #111814',
+            backgroundColor: '#ffffff',
+            border: '1px solid rgba(0, 0, 0, 0.08)',
             transform: getPillOffset(),
           }}
-          className="absolute top-[2px] bottom-[2px] left-[2px] w-[calc(33.33%-2.5px)] rounded-lg transition-transform duration-300 ease-out shadow-sm"
+          className="absolute top-[3px] bottom-[3px] left-[3px] w-[calc(33.33%-4px)] rounded-lg transition-transform duration-300 ease-out shadow-xs"
         />
 
         {options.map((opt) => {
@@ -45,10 +45,10 @@ export default function SummaryLengthSelector({ selected, onChange }: SummaryLen
               key={opt.value}
               type="button"
               onClick={() => onChange(opt.value)}
-              className={`relative z-10 flex-1 py-2.5 text-center text-xs font-black uppercase tracking-widest transition-all duration-300 outline-none
+              className={`relative z-10 flex-1 py-2 text-center text-xs font-bold uppercase tracking-wider transition-all duration-300 outline-none cursor-pointer
                 ${isActive 
-                  ? 'text-[#111814]' 
-                  : 'text-[#111814]/65 hover:text-[#111814]'
+                  ? 'text-neutral-900' 
+                  : 'text-neutral-500 hover:text-neutral-900'
                 }
               `}
             >
@@ -59,7 +59,7 @@ export default function SummaryLengthSelector({ selected, onChange }: SummaryLen
       </div>
       
       <div className="mt-3.5 text-center min-h-[36px] flex items-center justify-center">
-        <p className="text-[11px] font-bold text-[#111814]/85 leading-relaxed max-w-xs transition-all duration-300">
+        <p className="text-[11px] font-semibold text-neutral-500 leading-relaxed max-w-xs transition-all duration-300">
           {selected === 'short' && (
             <span>Generates a highly concise, 2-3 sentence overview highlighting the absolute core takeaways.</span>
           )}

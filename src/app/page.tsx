@@ -188,7 +188,7 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen font-sans text-[#111814] relative selection:bg-[#111814]/15 selection:text-[#111814]">
+    <div className="flex flex-col min-h-screen font-sans text-neutral-900 relative selection:bg-teal-800/10 selection:text-teal-900 bg-[#fafafa]">
       <div className="grid-overlay" />
 
       <Header />
@@ -206,96 +206,50 @@ export default function Home() {
         }}
       />
 
-      <main className="flex-1 flex flex-col items-center justify-start px-4 py-8 sm:px-6 lg:px-8 max-w-7xl w-full mx-auto relative z-10">
+      <main className="flex-1 flex flex-col items-center justify-start px-4 py-12 sm:px-6 lg:px-8 max-w-7xl w-full mx-auto relative z-10">
 
-        <div className="w-full flex-1 flex flex-col justify-start mt-4 sm:mt-8">
+        <div className="w-full flex-1 flex flex-col justify-start mt-4">
 
-          {/* STATE 1 — EMPTY WORKSPACE (Asymmetrical & Editorial) */}
+          {/* STATE 1 — EMPTY WORKSPACE (Centered & Premium) */}
           {step === 'idle' && !file && (
-            <div className="w-full max-w-5xl mx-auto flex flex-col gap-10">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 xl:gap-16 items-center py-6 sm:py-10 animate-in fade-in slide-in-from-bottom-6 duration-300">
-                
-                {/* Left Editorial Section */}
-                <div className="lg:col-span-7 flex flex-col text-left">
-                  <h2 className="font-display text-6xl sm:text-7xl lg:text-8xl font-normal tracking-tight leading-none text-[#111814] uppercase">
-                    MAKE YOUR <br />
-                    DOCUMENTS <br />
-                    SPEAK.
-                  </h2>
-                  
-                  <p className="mt-6 text-sm sm:text-base text-[#111814]/75 font-semibold leading-relaxed max-w-md">
-                    Drop a document worth understanding. Or start by{' '}
-                    <button 
-                      onClick={() => fileInputRef.current?.click()}
-                      className="underline font-black text-[#111814] hover:text-black cursor-pointer bg-transparent border-0 p-0 inline-block focus:outline-none"
-                    >
-                      browsing your files
-                    </button>.
-                  </p>
-
-                  <div className="mt-5">
-                    <button
-                      onClick={handleLoadSample}
-                      style={{
-                        boxShadow: '2px 2px 0 rgba(17, 24, 20, 0.8)',
-                        border: '2px solid #111814'
-                      }}
-                      className="text-xs font-black uppercase tracking-wider text-[#111814] bg-white rounded-xl px-4 py-2.5 cursor-pointer hover:bg-neutral-100 transition-all duration-200 active:scale-[0.98]"
-                    >
-                      ⚡ Load Sample Document
-                    </button>
-                  </div>
-
-                  <div className="mt-8 flex items-center gap-2.5 text-[9px] font-black tracking-widest text-[#111814]/40 uppercase">
-                    <span>PDF</span>
-                    <span>&bull;</span>
-                    <span>JPG</span>
-                    <span>&bull;</span>
-                    <span>PNG</span>
-                    <span>&bull;</span>
-                    <span>OCR Parser</span>
-                  </div>
-                </div>
-
-                {/* Right Interactive Ingestion Section (Desk/Visual Mat) */}
-                <div className="lg:col-span-5 flex items-center justify-center relative py-12">
-                  
-                  {/* Overlapping page graphics behind Doodle folder */}
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
-                    {/* Page sheet 1 */}
-                    <div className="w-40 h-52 bg-white/50 border border-[#111814]/15 rounded-xl shadow-md rotate-[-8deg] -translate-x-8 -translate-y-4" />
-                    {/* Page sheet 2 */}
-                    <div className="w-40 h-52 bg-white/75 border border-[#111814]/15 rounded-xl shadow-md rotate-[6deg] translate-x-6 translate-y-2" />
-                  </div>
-
-                  {/* Lime Crush active workspace block */}
-                  <div className="relative z-10 w-full max-w-[280px] bg-gradient-to-tr from-[#F9F586] to-[#A1FFCE] border-2 border-[#111814] rounded-3xl p-8 shadow-xl hover:translate-y-[-2px] transition-transform duration-300">
-                    <DoodleUpload
-                      onFileSelected={validateAndSelectFile}
-                      error={validationError}
-                      setError={setValidationError}
-                    />
-                  </div>
+            <div className="w-full max-w-4xl mx-auto flex flex-col items-center justify-center animate-in fade-in slide-in-from-bottom-6 duration-300">
+              
+              {/* Top Badge */}
+              <div className="flex justify-center mb-6">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-neutral-100 border border-neutral-200/80 text-xs font-semibold text-neutral-600 select-none">
+                  <span className="w-1.5 h-1.5 rounded-full bg-teal-800" />
+                  <span>Dual Engine • PDF Parsing & Optical Character Recognition</span>
                 </div>
               </div>
 
-              {/* Editorial feature grid strip (Typography based, no cards) */}
-              <div className="w-full border-t border-[#111814]/10 pt-12 mt-8 grid grid-cols-1 md:grid-cols-3 gap-8 text-left select-none">
-                <div>
-                  <span className="text-[10px] font-black text-neutral-500 uppercase tracking-widest block mb-2">01 / PARSER</span>
-                  <h4 className="text-sm font-black text-[#111814] uppercase tracking-wider">Digital Parsing</h4>
-                  <p className="mt-2 text-xs text-[#111814]/75 leading-relaxed font-bold">Extracts content, preserving paragraphs and structural formatting.</p>
-                </div>
-                <div>
-                  <span className="text-[10px] font-black text-neutral-500 uppercase tracking-widest block mb-2">02 / INSIGHTS</span>
-                  <h4 className="text-sm font-black text-[#111814] uppercase tracking-wider">Smart Summary</h4>
-                  <p className="mt-2 text-xs text-[#111814]/75 leading-relaxed font-bold">Converts documents into customized, structured reading briefs.</p>
-                </div>
-                <div>
-                  <span className="text-[10px] font-black text-neutral-500 uppercase tracking-widest block mb-2">03 / AUDIT</span>
-                  <h4 className="text-sm font-black text-[#111814] uppercase tracking-wider">Structural Audit</h4>
-                  <p className="mt-2 text-xs text-[#111814]/75 leading-relaxed font-bold">Identifies logical leaks, missing sections, and weaker content blocks.</p>
-                </div>
+              {/* Hero Headline */}
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-neutral-900 text-center max-w-3xl leading-[1.15] mb-6">
+                Understand your documents.<br />
+                <span className="text-teal-800">Faster.</span> Clearer. Smarter.
+              </h1>
+
+              {/* Sub-description */}
+              <p className="text-sm sm:text-base text-neutral-500 text-center max-w-xl leading-relaxed mb-10">
+                Upload any PDF document or scanned image to receive clear executive summaries, actionable key takeaways, and comprehensive content audit reports.
+              </p>
+
+              {/* Upload Card Container (Centered) */}
+              <div className="w-full max-w-3xl mx-auto">
+                <DoodleUpload
+                  onFileSelected={validateAndSelectFile}
+                  error={validationError}
+                  setError={setValidationError}
+                />
+              </div>
+
+              {/* Sample Document Option */}
+              <div className="flex justify-center mt-6">
+                <button
+                  onClick={handleLoadSample}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-neutral-500 hover:text-neutral-900 underline transition-colors cursor-pointer"
+                >
+                  ⚡ Start with a sample document
+                </button>
               </div>
             </div>
           )}
@@ -305,42 +259,42 @@ export default function Home() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 xl:gap-16 items-start w-full max-w-5xl mx-auto py-6 sm:py-10 animate-in fade-in duration-300">
               
               {/* Left Column: 01 — THE DOCUMENT */}
-              <div className="lg:col-span-5 flex flex-col items-center lg:items-start text-center lg:text-left gap-6 border-b lg:border-b-0 lg:border-r border-[#111814]/10 pb-8 lg:pb-0 lg:pr-8 xl:pr-12">
-                <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#111814]/50 select-none">
+              <div className="lg:col-span-5 flex flex-col items-center lg:items-start text-center lg:text-left gap-6 border-b lg:border-b-0 lg:border-r border-neutral-200/80 pb-8 lg:pb-0 lg:pr-8 xl:pr-12">
+                <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-neutral-450 select-none">
                   01 / The Document
                 </span>
 
                 {/* Stylized Document Preview Box */}
-                <div className="relative w-44 h-56 bg-white border-2 border-[#111814] rounded-2xl shadow-xl overflow-hidden flex flex-col p-4 select-none">
-                  <div className="flex items-center justify-between mb-4 border-b border-[#111814]/10 pb-2">
-                    <span className="text-[8px] font-black uppercase tracking-wider text-[#111814]/60 truncate max-w-[80px]">
+                <div className="relative w-44 h-56 bg-white border border-neutral-200/80 rounded-2xl shadow-sm overflow-hidden flex flex-col p-4 select-none">
+                  <div className="flex items-center justify-between mb-4 border-b border-neutral-100 pb-2">
+                    <span className="text-[8px] font-bold uppercase tracking-wider text-neutral-500 truncate max-w-[80px]">
                       {file.name}
                     </span>
-                    <span className="text-[8px] font-black uppercase tracking-wider bg-[#111814] text-white px-1.5 py-0.5 rounded">
+                    <span className="text-[8px] font-bold uppercase tracking-wider bg-black text-white px-1.5 py-0.5 rounded">
                       {file.name.split('.').pop()?.toUpperCase()}
                     </span>
                   </div>
                   <div className="space-y-2.5 flex-1">
-                    <div className="h-1.5 bg-[#111814]/10 rounded w-5/6" />
-                    <div className="h-1.5 bg-[#111814]/10 rounded w-full" />
-                    <div className="h-1.5 bg-[#111814]/10 rounded w-4/5" />
-                    <div className="h-1.5 bg-[#111814]/10 rounded w-11/12" />
-                    <div className="h-1.5 bg-[#111814]/10 rounded w-2/3" />
+                    <div className="h-1.5 bg-neutral-100 rounded w-5/6" />
+                    <div className="h-1.5 bg-neutral-100 rounded w-full" />
+                    <div className="h-1.5 bg-neutral-100 rounded w-4/5" />
+                    <div className="h-1.5 bg-neutral-100 rounded w-11/12" />
+                    <div className="h-1.5 bg-neutral-100 rounded w-2/3" />
                   </div>
                 </div>
 
                 <div className="flex flex-col items-center lg:items-start">
-                  <p className="text-sm font-black text-[#111814] break-all max-w-[280px]">
+                  <p className="text-sm font-bold text-neutral-800 break-all max-w-[280px]">
                     {file.name}
                   </p>
-                  <p className="mt-1 text-[10px] font-black text-[#111814]/60 uppercase tracking-widest">
+                  <p className="mt-1 text-[10px] font-bold text-neutral-450 uppercase tracking-widest">
                     {file.type === 'application/pdf' || file.name.endsWith('.pdf') ? 'PDF' : 'Image'} &bull; {formatFileSize(file.size)}
                   </p>
                 </div>
 
                 <button
                   onClick={handleReset}
-                  className="rounded-xl border-2 border-[#111814] bg-white/50 px-4 py-2.5 text-xs font-black uppercase text-[#111814] hover:bg-white transition-all cursor-pointer shadow-sm active:scale-98"
+                  className="rounded-xl border border-neutral-300 bg-white hover:bg-neutral-50 px-4 py-2 text-xs font-bold text-neutral-700 transition-all cursor-pointer shadow-xs active:scale-98"
                 >
                   Change file
                 </button>
@@ -348,27 +302,23 @@ export default function Home() {
 
               {/* Right Column: 02 — THE ANALYSIS */}
               <div className="lg:col-span-7 flex flex-col justify-start">
-                <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#111814]/50 select-none">
+                <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-neutral-450 select-none">
                   02 / The Analysis
                 </span>
 
-                <h3 className="mt-4 font-display text-3xl text-[#111814] uppercase select-none">
+                <h3 className="mt-4 text-2xl font-bold text-neutral-900 select-none">
                   How much should we unpack?
                 </h3>
 
-                {/* Depth selector block inside Lime Crush block */}
-                <div className="mt-5 bg-gradient-to-tr from-[#F9F586] to-[#A1FFCE] border-2 border-[#111814] rounded-3xl p-6 shadow-md">
+                {/* Depth selector block */}
+                <div className="mt-5 bg-[#fbfbfb] border border-neutral-200/80 rounded-3xl p-6 shadow-xs">
                   <div className="mt-1">
                     <SummaryLengthSelector selected={summaryLength} onChange={setSummaryLength} />
                   </div>
 
                   <button
                     onClick={handleProcess}
-                    style={{
-                      boxShadow: '4px 4px 0 rgba(17, 24, 20, 0.8)',
-                      border: '2px solid #111814'
-                    }}
-                    className="mt-8 w-full flex items-center justify-center gap-2 rounded-xl bg-[#111814] text-white py-3.5 text-xs font-black uppercase tracking-widest transition-all duration-200 active:scale-[0.99] hover:bg-gradient-to-r hover:from-[#F9F586] hover:to-[#A1FFCE] hover:text-[#111814] cursor-pointer"
+                    className="mt-8 w-full flex items-center justify-center gap-2 rounded-xl bg-black text-white hover:bg-neutral-850 py-3.5 text-xs font-bold uppercase tracking-widest transition-all duration-200 active:scale-[0.99] cursor-pointer shadow-xs"
                   >
                     <span>Analyze document →</span>
                   </button>
@@ -387,16 +337,16 @@ export default function Home() {
 
           {/* ERROR STATE */}
           {step === 'error' && error && (
-            <div className="max-w-md mx-auto w-full rounded-3xl border-2 border-[#111814] bg-white/80 p-6 shadow-xl text-center animate-in fade-in zoom-in-95">
-              <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-red-100 text-red-600 border border-red-600 shadow-sm">
+            <div className="max-w-md mx-auto w-full rounded-3xl border border-neutral-200 bg-white p-6 shadow-md text-center animate-in fade-in zoom-in-95">
+              <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-red-50 text-red-650 border border-red-200 shadow-xs">
                 <AlertTriangle className="h-5 w-5" />
               </div>
 
-              <h3 className="mt-4 text-xs font-black tracking-widest uppercase text-[#111814]">Analysis Halted</h3>
-              <p className="mt-3 text-xs font-bold text-red-700 leading-relaxed">{error.message}</p>
+              <h3 className="mt-4 text-xs font-bold tracking-widest uppercase text-neutral-800">Analysis Halted</h3>
+              <p className="mt-3 text-xs font-semibold text-red-800 leading-relaxed">{error.message}</p>
 
               {error.isScannedPdfFallback && (
-                <div className="mt-4 rounded-2xl bg-neutral-950 p-4 text-[10px] text-[#F9F586] text-left leading-relaxed border border-neutral-800">
+                <div className="mt-4 rounded-2xl bg-neutral-900 p-4 text-[10px] text-neutral-350 text-left leading-relaxed border border-neutral-800">
                   <strong className="block mb-1 text-white font-extrabold uppercase tracking-wide">🔍 Standard parser bypassed:</strong>
                   Standard text extraction only works for digital, selectable PDFs. For scanned pages or image documents, please convert them to JPG/PNG images and upload them directly to run OCR.
                 </div>
@@ -405,17 +355,13 @@ export default function Home() {
               <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
                 <button
                   onClick={handleReset}
-                  className="rounded-xl border-2 border-[#111814] bg-white/50 px-4 py-2.5 text-xs font-black uppercase text-[#111814] hover:bg-white transition-colors cursor-pointer"
+                  className="rounded-xl border border-neutral-300 bg-white hover:bg-neutral-55 px-4 py-2.5 text-xs font-bold uppercase text-neutral-700 transition-colors cursor-pointer"
                 >
                   Different File
                 </button>
                 <button
                   onClick={handleProcess}
-                  style={{
-                    boxShadow: '4px 4px 0 rgba(17, 24, 20, 0.8)',
-                    border: '2px solid #111814'
-                  }}
-                  className="rounded-xl bg-[#111814] text-white px-4 py-2.5 text-xs font-black uppercase tracking-widest hover:bg-gradient-to-r hover:from-[#F9F586] hover:to-[#A1FFCE] hover:text-[#111814] transition-all cursor-pointer"
+                  className="rounded-xl bg-black hover:bg-neutral-850 text-white px-4 py-2.5 text-xs font-bold uppercase tracking-widest transition-all cursor-pointer shadow-xs"
                 >
                   Retry Analysis
                 </button>
@@ -433,10 +379,9 @@ export default function Home() {
         </div>
       </main>
 
-
-      <footer className="w-full border-t border-neutral-900/10 bg-white/10 backdrop-blur-sm py-6 text-center text-[9px] font-black text-neutral-800 uppercase tracking-widest mt-12 shrink-0">
+      <footer className="w-full border-t border-neutral-200 bg-white py-6 text-center text-[9px] font-bold text-neutral-500 uppercase tracking-widest mt-12 shrink-0">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <p>&copy; {new Date().getFullYear()} DocuBrief Systems. All operations compiled in-memory.</p>
+          <p>&copy; {new Date().getFullYear()} DocuSummary Systems. All operations compiled in-memory.</p>
         </div>
       </footer>
     </div>

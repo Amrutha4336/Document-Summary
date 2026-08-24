@@ -30,8 +30,7 @@
 }
 
 body {
-  background: linear-gradient(135deg, #C6FFDD 0%, #FBD786 50%, #F7797D 100%);
-  background-attachment: fixed;
+  background-color: #fafafa;
   color: var(--text-dark);
   font-family: var(--font-sans);
   overflow-x: hidden;

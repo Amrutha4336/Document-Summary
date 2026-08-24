@@ -15,7 +15,6 @@ export default function DoodleUpload({
   setError
 }: DoodleUploadProps) {
   const [isDragActive, setIsDragActive] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const validateFile = (file: File): boolean => {
@@ -84,23 +83,7 @@ export default function DoodleUpload({
   };
 
   return (
-    <div className="w-full">
-      <svg className="absolute w-0 h-0 pointer-events-none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <filter id="squiggle" x="-10%" y="-10%" width="120%" height="120%">
-            <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" result="noise">
-              <animate 
-                attributeName="seed" 
-                values="1;5;9;2;7;3;10;4;8;6" 
-                dur="0.45s" 
-                repeatCount="indefinite" 
-              />
-            </feTurbulence>
-            <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" xChannelSelector="R" yChannelSelector="G" />
-          </filter>
-        </defs>
-      </svg>
-
+    <div className="w-full flex flex-col items-center">
       <input
         ref={fileInputRef}
         type="file"
@@ -109,121 +92,135 @@ export default function DoodleUpload({
         onChange={handleChange}
       />
 
-      <div
-        onDragEnter={handleDrag}
-        onDragOver={handleDrag}
-        onDragLeave={handleDrag}
-        onDrop={handleDrop}
-        onClick={triggerInput}
-        onKeyDown={handleKeyDown}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        tabIndex={0}
-        role="button"
-        aria-label="Upload file drag area"
-        className={`relative flex flex-col items-center justify-center cursor-pointer transition-all duration-300 select-none outline-none group
-          ${isDragActive ? 'scale-105' : 'hover:scale-[1.03]'}
-        `}
-      >
-        <div 
-          className={`relative w-48 h-32 flex items-center justify-center transition-all duration-300
-            ${isHovered || isDragActive ? 'squigglevision scale-110' : ''}
+      {/* Main Upload Card Container */}
+      <div className="w-full bg-[#fbfbfb] border border-neutral-200/80 rounded-3xl p-6 sm:p-8 shadow-xs flex flex-col items-center justify-center">
+        
+        {/* Dashed Drop Zone */}
+        <div
+          onDragEnter={handleDrag}
+          onDragOver={handleDrag}
+          onDragLeave={handleDrag}
+          onDrop={handleDrop}
+          onClick={triggerInput}
+          onKeyDown={handleKeyDown}
+          tabIndex={0}
+          role="button"
+          aria-label="Upload file drag area"
+          className={`w-full border-2 border-dashed rounded-2xl p-8 sm:p-12 flex flex-col items-center justify-center transition-all duration-200 cursor-pointer select-none outline-none
+            ${isDragActive 
+              ? 'border-teal-700 bg-teal-55/10' 
+              : 'border-neutral-200 bg-white/40 hover:border-neutral-350 hover:bg-white/60'
+            }
           `}
         >
-          <svg 
-            viewBox="0 0 160 100" 
-            className="w-full h-full fill-none stroke-[#111814]"
-            strokeWidth="2.8" 
-            strokeLinecap="round" 
-            strokeLinejoin="round"
+          {/* Upload Icon Container */}
+          <div className="flex items-center justify-center w-14 h-14 bg-white border border-neutral-100 rounded-2xl shadow-xs mb-5">
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2.2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              className="w-5.5 h-5.5 text-neutral-600"
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="17 8 12 3 7 8" />
+              <line x1="12" y1="3" x2="12" y2="15" />
+            </svg>
+          </div>
+
+          <h3 className="text-base sm:text-lg font-bold text-neutral-900 mb-2 text-center">
+            Drop your document here
+          </h3>
+
+          <p className="text-xs sm:text-sm text-neutral-550 text-center max-w-md mb-6 leading-relaxed">
+            Upload PDF or image files (PNG, JPG, JPEG) up to 10 MB for instant summarization & analysis.
+          </p>
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              triggerInput();
+            }}
+            className="bg-black text-white hover:bg-neutral-850 active:scale-97 px-6 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-xs mb-4 cursor-pointer"
           >
-            {/* Sparkle details */}
-            <g 
-              className={`transition-transform duration-700 origin-center
-                ${isHovered || isDragActive ? 'rotate-[45deg] scale-110' : ''}
-              `}
-              style={{ stroke: '#F7797D', transformOrigin: '80px 50px' }}
-            >
-              <path d="M22,25 L24,20 L26,25 L31,27 L26,29 L24,34 L22,29 L17,27 Z" strokeWidth="1.5" fill="#F7797D" fillOpacity="0.2" />
-              <path d="M135,18 L136.5,14 L138,18 L142,19 L138,20.5 L136.5,24.5 L135,20.5 L131,19 Z" strokeWidth="1.5" fill="#F7797D" fillOpacity="0.2" />
-            </g>
+            Choose file
+          </button>
 
-            {/* Scribble detail */}
-            <path 
-              d="M15,75 Q20,72 25,78" 
-              stroke="#111814" 
-              strokeWidth="2" 
-            />
-            
-            {/* Background page sheet */}
-            <g 
-              className={`transition-transform duration-300 ease-out
-                ${isHovered || isDragActive ? '-translate-y-5 translate-x-2' : ''}
-              `}
-            >
-              <polygon points="50,15 105,15 115,25 115,70 50,70" strokeWidth="2.8" fill="rgba(255,255,255,0.9)" />
-              <line x1="62" y1="32" x2="102" y2="32" strokeWidth="2.2" />
-              <line x1="62" y1="44" x2="92" y2="44" strokeWidth="2.2" />
-              <line x1="62" y1="56" x2="102" y2="56" strokeWidth="2.2" />
-            </g>
-
-            {/* Middle page sheet */}
-            <g 
-              className={`transition-transform duration-300 ease-out
-                ${isHovered || isDragActive ? '-translate-y-9 -translate-x-1.5 rotate-[-4deg]' : ''}
-              `}
-            >
-              <polygon points="40,25 90,25 100,35 100,80 40,80" fill="white" stroke="#111814" strokeWidth="2.8" />
-              <line x1="52" y1="40" x2="88" y2="40" stroke="#111814" strokeWidth="2.2" />
-              <line x1="52" y1="50" x2="80" y2="50" stroke="#111814" strokeWidth="2.2" />
-              <line x1="52" y1="60" x2="88" y2="60" stroke="#111814" strokeWidth="2.2" />
-              
-              <path 
-                d="M84,33 C84,27 91,27 91,33 L91,48 C91,53 82,53 82,48 L82,37 C82,34 87,34 87,37 L87,46" 
-                stroke="#F7797D" 
-                strokeWidth="2" 
-                fill="none"
-              />
-            </g>
-
-            {/* Folder Back Panel (Lime Crush Mint #A1FFCE) */}
-            <path 
-              d="M10,85 L10,35 Q10,30 15,30 L55,30 Q60,30 65,35 L75,42 L138,42 Q144,42 144,47 L144,85 Q144,90 138,90 L16,90 Q10,90 10,85 Z" 
-              fill="#A1FFCE" 
-              stroke="#111814" 
-              strokeWidth="3.2" 
-            />
-
-            {/* Folder Front Panel (Lime Crush Yellow #F9F586) */}
-            <path 
-              d="M10,85 L18,52 Q20,48 26,48 L138,48 Q144,48 142,55 L132,86 Q130,90 124,90 L16,90 Q10,90 10,85 Z" 
-              fill="#F9F586" 
-              stroke="#111814" 
-              strokeWidth="3.2"
-              className={`transition-all duration-300 origin-bottom
-                ${isHovered || isDragActive ? 'rotate-[-3deg] translate-y-0.5' : ''}
-              `}
-            />
-          </svg>
-        </div>
-
-        <div className="mt-4 text-center">
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#111814] bg-[#111814]/5 px-2.5 py-1 rounded-full group-hover:bg-[#111814]/10 transition-colors">
-            {isDragActive ? 'Drop document' : 'drag file here'}
+          <p className="text-xs text-neutral-400 text-center">
+            or drag and drop your file directly onto this canvas
           </p>
         </div>
+
+        {/* Key Features checklist row */}
+        <div className="w-full flex flex-wrap items-center justify-center gap-x-8 gap-y-3 pt-6 mt-6 border-t border-neutral-150">
+          <div className="flex items-center gap-2 text-xs font-semibold text-neutral-600 select-none">
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2.5" 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              className="w-4.5 h-4.5 text-neutral-400"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="m9 12 2 2 4-4" />
+            </svg>
+            <span>Digital & scanned PDFs</span>
+          </div>
+
+          <div className="flex items-center gap-2 text-xs font-semibold text-neutral-600 select-none">
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2.5" 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              className="w-4.5 h-4.5 text-neutral-400"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="m9 12 2 2 4-4" />
+            </svg>
+            <span>OCR for document images</span>
+          </div>
+
+          <div className="flex items-center gap-2 text-xs font-semibold text-neutral-600 select-none">
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2.5" 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              className="w-4.5 h-4.5 text-neutral-400"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="m9 12 2 2 4-4" />
+            </svg>
+            <span>In-memory private pipeline</span>
+          </div>
+        </div>
+
       </div>
 
       {error && (
-        <div className="mt-6 flex items-start gap-3 rounded-2xl border border-red-950/20 bg-red-50/95 p-4 text-xs text-red-950 shadow-sm animate-in fade-in slide-in-from-top-2 font-semibold leading-relaxed max-w-sm mx-auto">
-          <AlertCircle className="h-4.5 w-4.5 shrink-0 text-red-700 mt-0.5" />
+        <div className="w-full max-w-md mt-6 flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50/80 p-4 text-xs text-red-950 shadow-sm animate-in fade-in slide-in-from-top-2 font-semibold leading-relaxed">
+          <AlertCircle className="h-4.5 w-4.5 shrink-0 text-red-750 mt-0.5" />
           <div className="flex-1">
             <h5 className="font-extrabold uppercase tracking-widest text-red-900">Validation Error</h5>
             <p className="mt-0.5">{error}</p>
           </div>
           <button 
             onClick={() => setError(null)} 
-            className="text-red-700 hover:text-red-950 font-bold"
+            className="text-red-705 hover:text-red-950 font-bold"
           >
             &times;
           </button>
@@ -232,4 +229,3 @@ export default function DoodleUpload({
     </div>
   );
 }
-

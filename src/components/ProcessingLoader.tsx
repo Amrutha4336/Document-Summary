@@ -80,36 +80,36 @@ export default function ProcessingLoader({ currentStep, file }: ProcessingLoader
       <div className="relative flex flex-col items-center justify-center py-6 w-full">
         
         {/* Background Aura */}
-        <div className="absolute w-44 h-44 rounded-full bg-gradient-to-tr from-[#F9F586]/20 via-[#A1FFCE]/25 to-[#F7797D]/10 blur-2xl animate-pulse pointer-events-none" />
+        <div className="absolute w-44 h-44 rounded-full bg-gradient-to-tr from-teal-500/10 via-neutral-100/5 to-teal-650/10 blur-2xl animate-pulse pointer-events-none" />
 
         {/* The Stylized Paper Object */}
-        <div className="relative w-44 h-56 bg-white border-2 border-[#111814] rounded-2xl shadow-xl overflow-hidden flex flex-col p-4 z-10 transition-all duration-300">
+        <div className="relative w-44 h-56 bg-white border border-neutral-250/80 rounded-2xl shadow-md overflow-hidden flex flex-col p-4 z-10 transition-all duration-300">
           
           {/* Top Paper Lip Line (header section) */}
-          <div className="flex items-center justify-between mb-4 border-b border-[#111814]/10 pb-2">
+          <div className="flex items-center justify-between mb-4 border-b border-neutral-100 pb-2">
             <div className="flex items-center gap-1.5">
-              <FileText className="h-3.5 w-3.5 text-[#111814]/70" />
-              <span className="text-[8px] font-black uppercase tracking-wider text-[#111814]/60 truncate max-w-[80px]">
+              <FileText className="h-3.5 w-3.5 text-neutral-450" />
+              <span className="text-[8px] font-bold uppercase tracking-wider text-neutral-500 truncate max-w-[80px]">
                 {file?.name || 'document'}
               </span>
             </div>
-            <span className="text-[8px] font-black uppercase tracking-wider bg-[#111814] text-white px-1.5 py-0.5 rounded">
+            <span className="text-[8px] font-bold uppercase tracking-wider bg-black text-white px-1.5 py-0.5 rounded">
               {fileExt}
             </span>
           </div>
 
           {/* Dummy Lines representing text contents */}
           <div className="space-y-2.5 flex-1">
-            <div className="h-2 bg-[#111814]/10 rounded w-5/6" />
-            <div className="h-2 bg-[#111814]/10 rounded w-full" />
-            <div className="h-2 bg-[#111814]/10 rounded w-4/5" />
+            <div className="h-2 bg-neutral-100 rounded w-5/6" />
+            <div className="h-2 bg-neutral-100 rounded w-full" />
+            <div className="h-2 bg-neutral-100 rounded w-4/5" />
             
-            <div className="h-2 bg-[#111814]/10 rounded w-11/12" />
-            <div className="h-2 bg-[#111814]/10 rounded w-full" />
-            <div className="h-2 bg-[#111814]/10 rounded w-2/3" />
+            <div className="h-2 bg-neutral-100 rounded w-11/12" />
+            <div className="h-2 bg-neutral-100 rounded w-full" />
+            <div className="h-2 bg-neutral-100 rounded w-2/3" />
 
-            <div className="h-2 bg-[#111814]/10 rounded w-3/4" />
-            <div className="h-2 bg-[#111814]/10 rounded w-5/6" />
+            <div className="h-2 bg-neutral-100 rounded w-3/4" />
+            <div className="h-2 bg-neutral-100 rounded w-5/6" />
           </div>
 
           {/* The Holographic Loader (Rotating 3D Cube) inside or floating in the page */}
@@ -130,8 +130,8 @@ export default function ProcessingLoader({ currentStep, file }: ProcessingLoader
           <div 
             className="absolute left-0 w-full h-[3px] opacity-90 pointer-events-none z-30"
             style={{
-              background: 'linear-gradient(90deg, transparent, #F7797D, #A1FFCE, transparent)',
-              boxShadow: '0 0 10px #F7797D, 0 0 20px #A1FFCE',
+              background: 'linear-gradient(90deg, transparent, #14b8a6, #0d9488, transparent)',
+              boxShadow: '0 0 10px rgba(20,184,166,0.4), 0 0 20px rgba(13,148,136,0.2)',
               animation: 'sweep 2.8s ease-in-out infinite'
             }}
           />
@@ -140,30 +140,30 @@ export default function ProcessingLoader({ currentStep, file }: ProcessingLoader
 
       {/* Human-designed Progress text & details */}
       <div className="mt-6 text-center w-full z-10 px-4">
-        <h3 className="font-display text-5xl text-[#111814] uppercase leading-none tracking-wide select-none">
+        <h3 className="text-3xl font-bold tracking-tight text-neutral-900 uppercase leading-none select-none">
           {largePhrase}
         </h3>
-        <p className="mt-2 text-[10px] font-black text-[#111814]/70 uppercase tracking-widest leading-none select-none">
+        <p className="mt-2.5 text-[10px] font-bold text-neutral-450 uppercase tracking-widest leading-none select-none">
           {detailPhrase}
         </p>
         
         {/* Simple elegant inline loader bar */}
-        <div className="mt-5 h-2.5 w-full bg-white/40 rounded-full overflow-hidden border-2 border-[#111814] p-[1.5px]">
+        <div className="mt-5 h-2 w-full bg-neutral-100 rounded-full overflow-hidden border border-neutral-250 p-[1px]">
           <div 
-            className="h-full rounded-full bg-[#111814] transition-all duration-700 ease-out"
+            className="h-full rounded-full bg-teal-800 transition-all duration-700 ease-out"
             style={{ width: `${progressVal}%` }}
           />
         </div>
 
         {/* Page / Progress status indicators */}
-        <div className="mt-4 flex items-center justify-between text-[9px] font-black uppercase tracking-widest text-[#111814]/60 border-t border-[#111814]/10 pt-3.5">
+        <div className="mt-4 flex items-center justify-between text-[9px] font-bold uppercase tracking-widest text-neutral-450 border-t border-neutral-150 pt-3.5">
           <span>Processing state</span>
           {isPdf ? (
-            <span className="font-mono text-[#111814] bg-[#111814]/5 px-2 py-0.5 rounded">
+            <span className="font-mono text-neutral-800 bg-neutral-100 px-2 py-0.5 rounded">
               scanning page {String(simulatedPage).padStart(2, '0')}
             </span>
           ) : (
-            <span className="font-mono text-[#111814] bg-[#111814]/5 px-2 py-0.5 rounded">
+            <span className="font-mono text-neutral-800 bg-neutral-100 px-2 py-0.5 rounded">
               scanning image
             </span>
           )}
